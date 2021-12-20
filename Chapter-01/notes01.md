@@ -22,4 +22,83 @@ In general a VM either executes software either individual process or a full sys
 
 So there is process persepective and systems perspective, so essentially there is also a process-level and system-level virtual machines. So you might have guess there is some virtualization that go here too lol.
 
-There are process-level and system-level virtual machines. So a process virtual machien is capable of supporting an individual process. In process VMs virtualized software is referred to as the runtime, aka runtime software. From there a system virtual machine provides a complete system environment. 
+There are process-level and system-level virtual machines. So a process virtual machien is capable of supporting an individual process. In process VMs virtualized software is referred to as the runtime, aka runtime software. From there a system virtual machine provides a complete system environment.
+
+### Process VMs versus Systems VMs 
+
+* Process Virtual Machines 
+
+1. Multiprogramming 
+
+This is the OS call interface and the user instruction set, The operating system support multiple user processes through multiprogramming, so each processor is given the illusion having the entire system to themselves. 
+
+2. Emulators and Dynamic Binary Translators 
+
+This is to emulate one insturction set on hardware designed for another. Source ISA to target ISA.
+The most straightforward emulation method is interpretations, wherer an interpreter program executing the target ISA fetches, decodes, and emulates the execution of individual source instructions.
+ 
+A better way of doing this is using a binary translation, This essentially means that blocks of source instructions are converted to target instructions that does the equivalen functionality. High overhead intially, but once the block translation is put in cache and repeatedly used this becomes much faster. Sometimes called dynamic binary translation.  
+
+The overhead meantioned above can be limited with profiling. 
+
+3. Same-ISA Binary Optimizers 
+
+Most effective for source binaries that are relatively unoptimized to begin with. But WHY.
+
+4. High-Level Language Virtual Machines: Platform Independence 
+
+These are focused on minimizing hardware-specific and OS-specific features because these would compromise platform independence. 
+
+JAVA Vm and CLI are boths based on bytecodes, that is the instructions are encode as a sequence of bytres, where each byte is a nopcode, a single-byte operand, or part of a multibyte operandl. 
+
+Typically the memory size is conceptually unbounded, with garbage collection as an assumed part of the implementations. 
+
+So, like in the research project, these applications are not compiled for a specfic OS, but for a set of standard libraries is provided as part of the overall execution environement. 
+
+* System Virtual Machines 
+
+1. The origins of a virtual machines. So basically a single host hardware platform can support mutiple guest OS environments simulataneously. 
+
+So going from traditional mainframes with tons of users utilizing Vms today we use servers and have multiple people so they offer security with isolation. This way we partitioning majopr software systems that run concurrently on the same hardware platform. 
+
+In system VMs, playform replication is the major feauture provided by a VMM. Guest OS or software is unware of the behind-the-scences work performed by the VMM. 
+
+2. Implementations of System Virtual Machines
+
+There is two ways, the first way is the VMM is first placed on the bare hardware and virtual machines fit on top. An alternative system VMM implementations builds virtualizing software on top of an existing host operatin system, this is called hosted VM. 
+
+3. Whole System VMs: Emulation 
+
+A whole system VM is where a complete software system, both OS and applications, is support on a host system that runs a different ISA and OS. Due to the ISAs are different, both application and OS code require emulation. The VM software executes as an application program supported by the host OS and uses no system ISA operations. 
+
+Basically the system VM, the VM software must emulate the entire hardware environment. We have to convert the guest system ISA operations to equivalent OS calls made to the hose OS. 
+
+Codesigned Virtual Machines: Hardware Optimization 
+
+The goal in all VM models is to etiher support multiple OS on the same platform or the support different ISAs and OS on the same platfrom. 
+
+But in cases of Codesigned VMs which aim to innovative ISAs and/or hardware implementations for improved perfromance, power efficiency, or both. 
+
+### Taxonomy 
+
+There are many types of VMs but in the broad range of things they are divided into two major types: process VMs and system VMs. 
+
+In a process VM, it support an ABI - user instruction plus system calls 
+
+In a system VM, it support an compolte ISA - both user and system instructions 
+
+Look at the text... Need to break this down...
+
+
+### Summary 
+
+Chapter 2-6: Process VMs
+
+Chapter 7-9: System VMs
+
+
+
+
+
+
+
