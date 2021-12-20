@@ -14,4 +14,12 @@ Despite there being differences in this or that operating system, there are some
 
 ### Computer Architecutre 
 
-TODO: Come back to this page 6
+Revisting computer architectural design, since virtual machines quite often bridge architecture boundaries, and one thing that is useful for VMs to consider is the implemetned architected infterfaces. 
+
+### Virtual Machine Basics 
+
+In general a VM either executes software either individual process or a full system as the same manner as the machine for which the software was developed. Virtual machines often have less performance than the real machine. 
+
+So there is process persepective and systems perspective, so essentially there is also a process-level and system-level virtual machines. So you might have guess there is some virtualization that go here too lol.
+
+There are process-level and system-level virtual machines. So a process virtual machien is capable of supporting an individual process. In process VMs virtualized software is referred to as the runtime, aka runtime software. From there a system virtual machine provides a complete system environment. 
