@@ -46,7 +46,13 @@ The same static basic block can belong to multiple dynamic basic blocks
 
 Translation will have on one dynamic basic block at a time. 
 
+### Same ISA Emulation 
 
+The most useful aspect of same-ISA emualtion is that the emulation manager is always in control of the software being emulated. 
+
+Using emulation techniques, all OS calls in guest's source binary can be deteceted to host operating system calls.
+
+The same methodly and navie way to od this is to just copy the code, and use exactly the same code in the target as the source. 
 
 
 
