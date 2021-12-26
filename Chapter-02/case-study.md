@@ -46,19 +46,20 @@ A comparission between each of the methodlogy in this chapter.
 
 * Start-up Performance: Slow -- The source memory image must frist be interpreted in otder to discover the control flow. 
 
-* Steady-state Performance: Medium -- 
+* Steady-state Performance: Medium -- This is better than indirect threading because each individual instructions do not have to be parsed everytime they are executed. There is high data cache however because the predecdoed instructions are still treated as data by the interpreter code.  
 
 * Code Portability: Medium -- 
 
 ### Binary Translation 
 
-* Memory Requirements: High -- 
+* Memory Requirements: High -- The size of predecoded memory image is proportional to the original source memory image. The predecoding can be reduced in a since that you can reduce the blocks of translated code are cached.  
 
-* Start-up Performance: Very Slow -- 
+* Start-up Performance: Very Slow -- The source memory image must first be interpreted in order to discover the control flow; then translated binary code must be generated.
 
-* Steady-state Perfromacne: Fast -- 
+* Steady-state Perfromacne: Fast -- The translated binaries are execute directly on hardware, we can furture better this by linking blocks together. 
 
-* Code Portability: Poor -- 
+* Code Portability: Poor -- Code is for a specific target ISA, so we have to do this whole part again for each targeted ISA
+
 
 
 
