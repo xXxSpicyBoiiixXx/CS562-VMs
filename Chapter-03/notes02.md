@@ -45,6 +45,9 @@ To acheive intrinsic compatibility the conditions just stated must hold for all 
 Extrinsic compatibilits is only achieved for processes that don't exceed a certain size since it can't be more than the native platform. 
 
 ### Implementation Dependences
+There is a difference amongst architecture and implementation to the design of computer systems. The problems discussed in the text is that there really isn't any good solutions to ushc leaks but a VM developer should be aware of them. 
+
+
 
 
 
