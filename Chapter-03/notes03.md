@@ -21,6 +21,9 @@ So the higher the flecivle the more software intensive it would be for a general
 So the most flexible way is the translation table between guest application address space and host application address space. 
 
 CODE TO ANALYZE... 
+
+The below code it is assumed that the mapped memory blocks are each 64KB. The translation table itself is maintained as part of the runtime, and it's host register r30. In order to perfrom the load we have that the source address is shifted by 16 bits to get the 64KB block number. We convert this and add it to the base of the table so we can get a pointer into the block addrtess in the host address space. 
+
 ////////////////////////////////////////////
 // Load instruction with software mapping //
 ////////////////////////////////////////////
@@ -39,6 +42,6 @@ lwz  r2, 0(r29) 	; do load
 
 ///////////////////////////////////////////
 
-
+The look up process is essetially where the guest address is translated into the host address by using the offset from where the guest block begins. 
 
 
