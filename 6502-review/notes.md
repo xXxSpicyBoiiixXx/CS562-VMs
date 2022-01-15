@@ -24,4 +24,7 @@ So there's a few ways we can name these..
 * Zero Page: $c0
 * Zero Page, X: $c0, X
 * Zero Page, Y: $c0, Y
-* Absolute, X and Absolute, Y: $c000, X and $c000
+* Absolute, X and Absolute, Y: $c000, X and $c000, Y 
+* Immediate: #$c0 
+* Relative: $c0 (or label) 
+
