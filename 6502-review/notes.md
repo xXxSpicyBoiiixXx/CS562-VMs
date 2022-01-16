@@ -30,4 +30,21 @@ So there's a few ways we can name these..
 * Implcit
 * Indirect ($c000) 
 
+### The Stack 
+
+This is like any other stack where values are popped and pulled in the 6502 processor. The depth of the stack pointer is meausred by the stack pointer register. 
+
+There are two stack instructions which are PHA (Push accumulator) and PLA (pull accumulator) 
+
+
+### Jumping 
+
+The jump instruction is like a brancing except the differences are that jumps are not conditionally executed and they take two-byte absolute address. 
+
+For small programs, its not really important for the second point but for larger programs it is since its the only way to move from one section of the code to another. 
+
+JSR/RTS are seen together typically JSR jumps from the current location to anotehr part of the code while RTS returns to the previous postion. Essentailyl like calling a function and returning
+
+The processor will know where to return to because JSR pushes the address minus one of the next instruction onto the stack before jumping to the given location. RTS pops this location, adds one to it, and jump to the location. 
+
 
