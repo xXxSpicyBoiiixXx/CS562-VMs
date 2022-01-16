@@ -27,4 +27,7 @@ So there's a few ways we can name these..
 * Absolute, X and Absolute, Y: $c000, X and $c000, Y 
 * Immediate: #$c0 
 * Relative: $c0 (or label) 
+* Implcit
+* Indirect ($c000) 
+
 
