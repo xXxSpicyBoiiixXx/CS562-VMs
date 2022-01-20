@@ -8,6 +8,6 @@
 ;) Look over 6502 ISA
 ! Look over 6502 snake implementation
 ! Complete prelimnary lab
-! Reread Chapter 2.1-2.3 
+;) Reread Chapter 2.1-2.3 
 ! Complete 6502 addressing mode exercise 
 !
