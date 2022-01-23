@@ -7,7 +7,7 @@
 
 // From NES 
 #include <nes/ppu.h>
-#include <new/io_reg.h>
+#include <nes/io_reg.h>
 
 #include <SDL2/SDL.h>
 
@@ -64,6 +64,15 @@ ret:
 
 static inline int load_rom(const char * nonnull path, reset_manager_t * nonnull rm, mos6502_t * nonnull cpu, const char * nonnull palette_path, const char * nonnull cscheme_path, int scale) { 
     
+    int retcode = 0; 
+    
+    FILE * f = try_fopen(path, "rb"); 
+    if(!f) { 
+        retcode = -1;
+        goto ret0; 
+    }    
+
+
 }
 
 
