@@ -13,3 +13,7 @@ Updates
 
 - Was able to get it to work on the older mac runnning Linux 
 - Everything seems to be in working order now we are at the step of implementing the CPU.
+----------
+
+
+Adding our own 6502 emulation but stopped at makefile.

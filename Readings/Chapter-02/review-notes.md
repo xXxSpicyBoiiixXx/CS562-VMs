@@ -8,4 +8,6 @@ In a fetch-decode we fetch some code and then decoded it while a threaded interp
 
 With an indirect interpretation we get that code portability but in the cost of performance but with direct interpretation we get beefier code but we get better performance. 
 
+# Reading 2.5-2.10
+
 
