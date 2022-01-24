@@ -82,7 +82,12 @@ mos6502_instr_repr (mos6502_t * cpu, uint16_t addr, char * buffer, size_t buflen
     {"CPX #", "SBC X, ind", "NOP #", "ISC X, ind", "CPX zpg", "SBC zpg", "INC zpg", "ISC zpg", "INX impl", "SBC #", "NOP impl", "USBC #", "CPX abs", "SBC abs", "INC abs", "ISC abs"}
     {"BEQ rel", "SBC ind, Y", "JAM", "ISC ind, Y", "NOP zpg, X", "SBC zpg, X", "INC zpg, X", "ISC zpg, X", "SED impl", "SBC abs, Y", "NOP impl", "ISC abs, Y", "NOP abs, X", "SBC abs, X", "INC abs, X", "ISC abs, X"}
     };
-	buffer[0] = 0;
+//	buffer[0] = 0;
+    
+    uint8_t opcode = read8(cpu, addr); 
+    uint8_t hi = opcode >> 4; 
+    uint8_t lo = opcode & 0x0F;
+    snprintf(buffer, buflen, "%s\n", loopup_table_opcode[hi][lo]);
 	return 0;
 }
 
@@ -92,6 +97,24 @@ mos6502_step (mos6502_t * cpu)
 	uint8_t opcode = read8(cpu, cpu->pc);
 
 	// FILL ME IN
+    uint8_t hi = opcode >> 4; 
+    uint8_t lo = opcode & 0x0F; 
+    decode_info_t decode_info; 
+    
+    switch(opcode) { 
+    
+    case 0x80:
+        decode_info.cpu = cpu;
+        decode_info.opcode = opcode;
+        decode_info.addr = cpu -> pc + 1; 
+        handle_vmcall(&decode_info);
+        break;
+
+    default:
+        // Add a table for this. 
+        (*lookup_table_opcode[hi][lo])(cpu);
+        break;
+    }
 
 	mos6502_advance_clk(cpu, instr_cycles[opcode]);
 	return MOS6502_STEP_RESULT_SUCCESS;
