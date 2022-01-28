@@ -7,6 +7,17 @@
 
 #include <string.h>
 
+#ifdef THREADED_CODE 
+#   ifdef DEBUG 
+#       define Next goto next_instr 
+#   else 
+#       define Next goto *(void *)(jumptbl base + *pc++)
+#   endif 
+#else
+#   define Instruct(name) case name
+#   define Next break
+#endif 
+
 static const uint8_t instr_cycles[256] = {
 	7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
 	2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
