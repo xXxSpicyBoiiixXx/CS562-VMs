@@ -63,31 +63,10 @@ buggy_read16 (mos6502_t * cpu, uint16_t addr)
 size_t
 mos6502_instr_repr (mos6502_t * cpu, uint16_t addr, char * buffer, size_t buflen)
 {
+	// FILL ME IN
 
-    string *lookup_table_opcode[16][16] = { 
-    {"BRK impl", "ORA X, ind", "JAM", "SLO X, ind", "NOP zpg", "ORA zpg", "ASL zpg", "SLO zpg", "PHP impl", "ORA #", "ASL A", "ANC #", "NOP abs", "ORA abs", "ASL abs", "SLO abs"}, 
-    {"BPL rel", "ORA ind, Y", "JAM", "SLO ind, Y", "NOP zpg, X", "ORA zpg, X", "ASL zpg, X", "SLO zpg, X", "CLC impl", "ORA abs, Y", "NOP impl", "SLO abs, Y","NOP abs, X", "ORA abs, X", "ASL abs, X", "SLO abs, X"} 
-    {"JSR abs", "AND X, ind", "JAM", "RLA X, ind", "BIT zpg", "AND zpg", "ROL zpg", "RLA zpg", "PLP impl", "AND #", "ROL A", "ANC #", "BIT abs", "AND abs", "ROL abs", "RLA abs"}
-    {"BMI rel", "AND ind, Y", "JAM", "RLA ind, Y", "NOP zpg, X", "AND zpg, X", "ROL zpg, X", "RLA zpg, X", "SEC impl", "AND abs, Y", "NOP impl", "RLA abs, Y", "NOP abs, X", "AND abs, X", "ROL abs, X", "RLA abs, X"}
-    {"RTI impl", "EOR X, ind", "JAM", "SRE X, ind", "NOP zpg", "EOR zpg", "LSR zpg", "SRE zpg", "PHA impl", "EOR #", "LSR A", "ALR #", "JMP abs", "EOR abs", "LSR abs", "SRE abs"}
-    {"BVC rel", "EOR ind, Y", "JAM", "SRE ind, Y", "NOP zpg, X", "EOR zpg, X", "LSR zpg, X", "SRE zpg, X", "CLI impl", "EOR abs, Y", "NOP impl", "SRE abs, Y", "NOP abs, X", "EOR abs, X", "LSR abs, X", "SRE abs, X"}
-    {"RTS impl", "ADC X, ind", "JAM", "RRA X, ind", "NOP zpg", "ADC zpg", "ROR zpg", "RRA zpg", "PLA impl", "ADC #", "ROR A", "ARR #", "JMP ind", "ADC abs", "ROR abs", "RRA abs"}
-    {"BVS rel", "ADC ind, Y", "JAM", "RRA ind, Y", "NOP zpg, X", "ADC zpg, X", "ROR zpg, X", "RRA zpg, X", "SEI impl", "ADC abs, Y", "NOP impl", "RRA abs, Y", "NOP abs, Y", "ADC abs, X", "ROR abs, X", "RRA abs, X"}
-    {"NOP #", "STA X, ind", "NOP #", "SAX X, ind", "STY zpg", "STA zpg", "STX zpg", "SAX zpg", "DEY impl", "NOP #", "TAX impl", "ANE #", "STY abs", "STA abs", "STX abs", "SAX abs"}
-    {"BCC rel", "STA ind, Y", "JAM", "SHA ind, Y", "STY zpg, X", "STA zpg, X", "STX zpg, Y", "SAX zpg, Y", "TYA impl", "STA abs, Y", "TXS impl", "TAS abs, Y", "SHY abs, X", "STA abs, X", "SHX abs, Y", "SHA abs, Y"}
-    {"LDY #", "LDA X, ind", "LDX #", "LAX X, ind", "LDY zpg", "LDA zpg", "LDX zpg", "LAX zpg", "TAY impl", "LDA #", "TAX impl", "LXA #", "LDY abs", "LDA abs", "LDX abs", "LAX abs"}
-    {"BCS rel", "LDA in, Y", "JAM", "LAX ind, Y", "LDY zpg, X", "LDA zpg, Y", "LDX zpg, Y", "LAX zpg, Y", "CLV impl", "LDA abs, Y", "TSX impl", "LAS abs, Y", "LDY abs, X", "LDA abs, X", "LDX abs, Y", "LAX abs, Y"}
-    {"CPY #", "CMP X, ind", "NOP #", "DCP X, ind", "CPY zpg", "CMP zpg", "DEC zpg", "DCP zpg", "INY impl", "CMP #", "DEX impl", "SBX #", "CPY abs", "CMP abs", "DEC abs", "DCP abs"}
-    {"BNE rel", "CMP ind, Y", "JAM", "DCP ind, Y", "NOP zpg, X", "CMP zpg, X", "DEC zpg, X", "DCP zpg, X", "CLD impl", "CMP abs, Y", "NOP impl", "DCP abs, Y", "NOP abs, X", "CMP abs, X", "DEC abs, X", "DCP abs, X"}
-    {"CPX #", "SBC X, ind", "NOP #", "ISC X, ind", "CPX zpg", "SBC zpg", "INC zpg", "ISC zpg", "INX impl", "SBC #", "NOP impl", "USBC #", "CPX abs", "SBC abs", "INC abs", "ISC abs"}
-    {"BEQ rel", "SBC ind, Y", "JAM", "ISC ind, Y", "NOP zpg, X", "SBC zpg, X", "INC zpg, X", "ISC zpg, X", "SED impl", "SBC abs, Y", "NOP impl", "ISC abs, Y", "NOP abs, X", "SBC abs, X", "INC abs, X", "ISC abs, X"}
-    };
-//	buffer[0] = 0;
-    
-    uint8_t opcode = read8(cpu, addr); 
-    uint8_t hi = opcode >> 4; 
-    uint8_t lo = opcode & 0x0F;
-    snprintf(buffer, buflen, "%s\n", loopup_table_opcode[hi][lo]);
+	// Delete this line when you're done
+	buffer[0] = 0;
 	return 0;
 }
 
@@ -97,24 +76,6 @@ mos6502_step (mos6502_t * cpu)
 	uint8_t opcode = read8(cpu, cpu->pc);
 
 	// FILL ME IN
-    uint8_t hi = opcode >> 4; 
-    uint8_t lo = opcode & 0x0F; 
-    decode_info_t decode_info; 
-    
-    switch(opcode) { 
-    
-    case 0x80:
-        decode_info.cpu = cpu;
-        decode_info.opcode = opcode;
-        decode_info.addr = cpu -> pc + 1; 
-        handle_vmcall(&decode_info);
-        break;
-
-    default:
-        // Add a table for this. 
-        (*lookup_table_opcode[hi][lo])(cpu);
-        break;
-    }
 
 	mos6502_advance_clk(cpu, instr_cycles[opcode]);
 	return MOS6502_STEP_RESULT_SUCCESS;
