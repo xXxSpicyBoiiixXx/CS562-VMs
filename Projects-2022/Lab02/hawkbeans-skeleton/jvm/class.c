@@ -246,8 +246,12 @@ hb_get_method_idx (const char * name, java_class_t * cls)
 java_class_t * 
 hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return NULL;
+	if(!const_idx) { 
+		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
+	} else { 
+					
+		}
+	}
 }
 
 
