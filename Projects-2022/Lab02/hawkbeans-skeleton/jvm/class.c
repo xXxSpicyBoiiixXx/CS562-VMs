@@ -246,11 +246,35 @@ hb_get_method_idx (const char * name, java_class_t * cls)
 java_class_t * 
 hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 {
+	// if there isn't anything in the const_idx, print out error statement
 	if(!const_idx) { 
 		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
 	} else { 
-					
+		const_pool_info_t* const_pool_entry = src_cls -> const_pool[const_idx]; 
+		
+		if(IS_RESOLVED(const_pool_entry)) { 
+			src_cls = (java_class_t *)MASK_RESOLVED_BIT(const_pool_entry); 
+			return src_cls; 
+			}		
+
+		const char* class_name = hb_get_const_str(const_idx, src_cls); 
+		java_class_t *cls = hb_get_class(class_name); 
+
+		if(cls) { 
+			const_pool_entry = (const_pool_info_t *)MARK_RESOLVED(cls); 
+		       	return cls; 
+			}
+
+		cls = hb_load_class(class_name); 
+		hb_add_class(class_name, cls); 
+		hb_prep_class(cls); 
+		hb_init_class(cls);
+
+		src_cls -> const_pool[const_idx] = (const_pool_info_t *)MARK_RESOLVED(cls); 
+		return cls; 
 		}
+
+	return NULL; 
 	}
 }
 
