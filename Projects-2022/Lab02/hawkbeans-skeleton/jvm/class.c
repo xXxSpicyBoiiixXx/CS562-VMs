@@ -246,7 +246,7 @@ hb_get_method_idx (const char * name, java_class_t * cls)
 java_class_t * 
 hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 {
-	// if there isn't anything in the const_idx, print out error statement
+	// if there isn't anything in the const_idx, print out error statement otherwise fill in the structure const_pool_info 
 	if(!const_idx) { 
 		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
 	} else { 
