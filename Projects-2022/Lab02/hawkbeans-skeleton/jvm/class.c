@@ -371,7 +371,36 @@ hb_resolve_method (u2 const_idx,
 		   java_class_t * src_cls,
 		   java_class_t * target_cls)
 {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
+	if(!const_idx) { 
+		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
+	} else {
+	        method_info_t *method = NULL; 	
+		CONSTANT_Methodref_info_t *methodref_info; 
+		
+		methodref_info = (CONSTANT_Methodref_info_t *)src_cls -> const_pool[const_inx]; 
+		
+		u2 class_idx = methodref_info->class_idx; 
+
+		// If there is no target class, then resolve it 
+		if(!target_cls) { 
+			target_cls = hb_resolve_class(class_idx, src_cls);
+		}
+		
+		// Error checking for target class
+		if(target_cls == NULL) {
+			HB_ERR("%s Target Class returns NULL\n", __func__); 
+			return NULL;  
+		}
+
+		if(hb_is_interface(target_cls)) { 
+			HB_ERR("%s Target Class is an interface\n", __func__); 
+			return NULL; 
+		}
+
+		
+
+				
+	}
     return NULL;
 }
 
