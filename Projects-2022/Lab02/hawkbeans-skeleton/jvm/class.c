@@ -276,7 +276,6 @@ hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 
 	return NULL; 
 	}
-}
 
 
 /*
@@ -371,13 +370,16 @@ hb_resolve_method (u2 const_idx,
 		   java_class_t * src_cls,
 		   java_class_t * target_cls)
 {
+	// Checks if it's implemetned, if not return NULL
 	if(!const_idx) { 
 		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
+		return NULL; 
 	} else {
+		// Initializing method information 
 	        method_info_t *method = NULL; 	
 		CONSTANT_Methodref_info_t *methodref_info; 
 		
-		methodref_info = (CONSTANT_Methodref_info_t *)src_cls -> const_pool[const_inx]; 
+		methodref_info = (CONSTANT_Methodref_info_t *)src_cls -> const_pool[const_idx]; 
 		
 		u2 class_idx = methodref_info->class_idx; 
 
@@ -396,13 +398,24 @@ hb_resolve_method (u2 const_idx,
 			HB_ERR("%s Target Class is an interface\n", __func__); 
 			return NULL; 
 		}
-
 		
-
-				
+		// Setting the name and type for the source class 
+		CONSTANT_NameAndType_info_t *nameandtype_info; 
+		
+		// Get's the string from the constnat pool fopr our sorce method name and source method 
+		const char* source_method_name = hb_get_const_str(nameandtype_info->name_idx, src_cls); 
+		const char* source_method_desc = hb_get_const_str(nameandtype_info->desc_idx, src_cls);  
+		
+		// From target class string comparisons
+		for(int i = 0; i < target_cls->methods_count; i++) { 
+		if(!strcmp(source_method_name, hb_get_const_str(target_cls-> methods[i].name_idx, target_cls)) && !strcmp(source_method_desc, hb_get_const_str(target_cls->methods[i].desc_idx, target_cls))) {
+		method = target_cls->methods + i;
+	       return method; 	
+		}
 	}
+	}	
     return NULL;
-}
+    }
 
 /* 
  * looks for a matching field in class C from class D (which contains
