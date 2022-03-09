@@ -937,11 +937,16 @@ handle_swap (u1 * bc, java_class_t * cls) {
 	return -1;
 }
 
-// WRITE ME
+// iadd  the value on the top of the operand that pop's the first two value,
+// adds them up and push the value back to the stack 
 static int
 handle_iadd (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	var_t a, b, c; 
+	a = pop_val(); 
+	b = pop_val(); 
+	c.int_val = a.int_val + b.int_val; 
+	push_val(c);
+	return 1;
 }
 
 static int
@@ -974,11 +979,22 @@ handle_dadd (u1 * bc, java_class_t * cls) {
 	return 1;
 }
 
-// WRITE ME
+// pops two values from the stack, subtracts them and then push the result back to the stack.
+// These are type ints, we have to consider, then we must consider negation 
 static int
 handle_isub (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	var_t a, b, c; 
+	a = pop_val(); 
+	b = pop_val(); 
+	if(a.int_val - b,int_val < 0) { 
+		c.int_val = -1*(b.int_val - a.int_val) 
+	} else { 
+		c.int_val = a.int_val - b.int_val; 
+	}
+	
+	push_val(c);
+	return 1;
+
 }
 
 static int
