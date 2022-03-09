@@ -249,9 +249,11 @@ hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 	// if there isn't anything in the const_idx, print out error statement otherwise fill in the structure const_pool_info 
 	if(!const_idx) { 
 		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
+		return NULL; 
 	} else { 
 		const_pool_info_t* const_pool_entry = src_cls -> const_pool[const_idx]; 
 		
+		// Check's if it's resolved and masks it, returns src_cls 	
 		if(IS_RESOLVED(const_pool_entry)) { 
 			src_cls = (java_class_t *)MASK_RESOLVED_BIT(const_pool_entry); 
 			return src_cls; 
@@ -259,17 +261,20 @@ hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 
 		const char* class_name = hb_get_const_str(const_idx, src_cls); 
 		java_class_t *cls = hb_get_class(class_name); 
-
+		
+		// returns cls as is and marks it in the pool as resolved
 		if(cls) { 
 			const_pool_entry = (const_pool_info_t *)MARK_RESOLVED(cls); 
 		       	return cls; 
 			}
-
+		
+		// loads cls with class name and adds, preps, and initilize
 		cls = hb_load_class(class_name); 
 		hb_add_class(class_name, cls); 
 		hb_prep_class(cls); 
 		hb_init_class(cls);
-
+		
+		
 		src_cls -> const_pool[const_idx] = (const_pool_info_t *)MARK_RESOLVED(cls); 
 		return cls; 
 		}
@@ -371,12 +376,14 @@ hb_resolve_method (u2 const_idx,
 		   java_class_t * src_cls,
 		   java_class_t * target_cls)
 {
-	if(!const_idx) { 
+	if(!const_idx) {
+	        // Index checking 	
 		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
+
 	} else {
+
 	        method_info_t *method = NULL; 	
 		CONSTANT_Methodref_info_t *methodref_info; 
-		
 		methodref_info = (CONSTANT_Methodref_info_t *)src_cls -> const_pool[const_inx]; 
 		
 		u2 class_idx = methodref_info->class_idx; 
@@ -386,18 +393,32 @@ hb_resolve_method (u2 const_idx,
 			target_cls = hb_resolve_class(class_idx, src_cls);
 		}
 		
-		// Error checking for target class
+		// Error checking for target class, if hb_resolve_class returns null
 		if(target_cls == NULL) {
 			HB_ERR("%s Target Class returns NULL\n", __func__); 
 			return NULL;  
 		}
-
+		
+		// Error checking for target_cls is not a interface
 		if(hb_is_interface(target_cls)) { 
 			HB_ERR("%s Target Class is an interface\n", __func__); 
 			return NULL; 
 		}
-
 		
+		// Name and type
+		CONSTANT_NameAndType_info_t *nameandtype_info; 
+		nameandtype_info = (CONSTANT_NameAndType_info_t *)src_cls->const_pool[memthodref_info->name_and_type_idx];
+		
+		// Source class information 
+		const char* source_method_name = hb_get_const_str(nameandtype_info->name_idx, src_cls); 
+		const char* source_method_desc = hb_get_const_str(nameandtype_info->desc_idx, src_cls); 
+		
+		// Target? 
+		for(int i = 0; i < target_cls->methods_count; i++) {
+			if(strcmp(source_method_name, hb_get_const_str(target_cls->methods[i].name_idx, target_cls) && strcmp(source_method_desc, hb_get_const_str(target_cls->methods[i].desc_idx, taget_cls))) 
+			method = target_cls->methods + i; 
+			return method;
+					}	
 
 				
 	}
