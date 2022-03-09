@@ -344,32 +344,29 @@ handle_aload (u1 * bc, java_class_t * cls) {
 // handle_iload_<n>. The <n> must be an index into the local variable array of the current frame. 
 // This is the same as iload excpet <n> is implicit
 // The value of the local variable at <n> is pushed onto the oeprand stack
+#define DO_ILOAD_N(n) \
+	stack_frame_t *frame = cur_thread->cur_frame; \
+	push_val(frame->locals[n]); \
+	return 1; 
+
 static int
 handle_iload_0 (u1 * bc, java_class_t * cls) {
-	stack_frame_t *frame = cur_thread->cur_frame; 
-	push_val(frame->locals[0];
-	return 1; 
+	DO_ILOAD_N(0);
 }
 
 static int
 handle_iload_1 (u1 * bc, java_class_t * cls) {
-    	stack_frame_t *frame = cur_thread->cur_frame;
-	push_val(frame->locals[1];
-	return 1;
+	DO_ILOAD_N(1); 
 }
 
 static int
 handle_iload_2 (u1 * bc, java_class_t * cls) {
-    	stack_frame_t *frame = cur_thread->cur_frame; 
-	push_val(frame->locals[2]; 
-	return 1; 
+	DO_ILOAD_N(2); 
 }
 
 static int
 handle_iload_3 (u1 * bc, java_class_t * cls) {
-    	stack_frame_t *frame = cur_thread->cur_frame 
-	push_val(frame->locals[3]; 
-	return 1; 
+	DO_ILOAD_N(3); 
 }
 
 #define DO_LLOADN(n) \
@@ -586,11 +583,15 @@ handle_saload (u1 * bc, java_class_t * cls) {
 }
 
 
-// WRITE ME
+// The value on top of the operand stack is popped and the value of the local
+// variable atindex is set to value 
 static int
 handle_istore (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	stack_frame_t *frame = cur_thread->cur_frame; 
+	var_t value = pop_val(); 
+	u1 idx = bc[1]; 
+	frame->locals[idx].int_val = value.int_val; 
+	return 2; 
 }
 
 static int
@@ -632,33 +633,33 @@ handle_astore (u1 * bc, java_class_t * cls) {
 	return 2;
 }
 
+// The same istore from previous handler but using n 
 
-// WRITE ME
+#define DO_ISTORE_N(n) \
+	stack_frame_t *frame = cur_thread->cur_frame; \
+	var_t value = pop_val(); \
+	frame->locals[n].int_val = value.int_val; \
+	return 1; 
+
+
 static int
 handle_istore_0 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ISTORE_N(0); 
 }
 
-// WRITE ME
 static int
 handle_istore_1 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ISTORE_N(1); 
 }
 
-// WRITE ME
 static int
 handle_istore_2 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ISTORE_N(2); 
 }
 
-// WRITE ME
 static int
 handle_istore_3 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ISTORE_N(3); 
 }
 
 #define DO_LSTOREN(n) \
