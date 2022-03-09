@@ -250,6 +250,9 @@ hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 	if(!const_idx) { 
 		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
 		return NULL; 
+	} else if(const_idx > src_cls->const_pool_count) {
+	        HB_ERR("%s OUT OF BOUNDS\n", __func__); 
+		return NULL; 	
 	} else { 
 		const_pool_info_t* const_pool_entry = src_cls -> const_pool[const_idx]; 
 		
@@ -269,12 +272,13 @@ hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 			}
 		
 		// loads cls with class name and adds, preps, and initilize
+		// Loads class, adds class, prep class, initlize class
 		cls = hb_load_class(class_name); 
 		hb_add_class(class_name, cls); 
 		hb_prep_class(cls); 
 		hb_init_class(cls);
 		
-		
+		// Overwrites the constant pool
 		src_cls -> const_pool[const_idx] = (const_pool_info_t *)MARK_RESOLVED(cls); 
 		return cls; 
 		}
@@ -375,84 +379,58 @@ hb_resolve_method (u2 const_idx,
 		   java_class_t * src_cls,
 		   java_class_t * target_cls)
 {
-<<<<<<< HEAD
+
+	// method_info_t setting to NULL, will return a method or NULL 
+	method_info_t *method = NULL; 
+	
+	// Constanst for method reference, name, and type 
+	CONSTANT_Methodref_info_t *methodref_info; 
+	CONSTANT_NameAndType_info_t *nameandtype_info; 
+	
+	// Setting methodref_info and nameandtype_info from source	
+	methodref_info = (CONSTANT_Methodref_info_t *)src_cls->const_pool[const_idx]; 
+	nameandtype_info = (CONSTANT_NameAndType_info_t *)src_cls->const_pool[methodref_info->name_and_type_idx];
+	
+	// Class idx 
+	u2 class_idx = methodref_info->class_idx; 
+
 	if(!const_idx) {
 	        // Index checking 	
 		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
 
-	} else {
-
-	        method_info_t *method = NULL; 	
-		CONSTANT_Methodref_info_t *methodref_info; 
-		methodref_info = (CONSTANT_Methodref_info_t *)src_cls -> const_pool[const_inx]; 
-=======
-	// Checks if it's implemetned, if not return NULL
-	if(!const_idx) { 
-		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
-		return NULL; 
-	} else {
-		// Initializing method information 
-	        method_info_t *method = NULL; 	
-		CONSTANT_Methodref_info_t *methodref_info; 
-		
-		methodref_info = (CONSTANT_Methodref_info_t *)src_cls -> const_pool[const_idx]; 
->>>>>>> d6a4671050f4960abb37ee0ca6368c88becb5039
-		
-		u2 class_idx = methodref_info->class_idx; 
-
+	} else if(!target_cls) {
 		// If there is no target class, then resolve it 
-		if(!target_cls) { 
-			target_cls = hb_resolve_class(class_idx, src_cls);
-		}
-		
-		// Error checking for target class, if hb_resolve_class returns null
-		if(target_cls == NULL) {
-			HB_ERR("%s Target Class returns NULL\n", __func__); 
-			return NULL;  
-		}
-		
-		// Error checking for target_cls is not a interface
-		if(hb_is_interface(target_cls)) { 
-			HB_ERR("%s Target Class is an interface\n", __func__); 
+		target_cls = hb_resolve_class(class_idx, src_cls);
+
+		// Error chceking for target class, if hb_resolve_class return NULL 
+		if(target_cls == NULL) { 
+			HB_ERR("%s Target class returns NULL\n", __func__); 
 			return NULL; 
 		}
-		
-<<<<<<< HEAD
-		// Name and type
-		CONSTANT_NameAndType_info_t *nameandtype_info; 
-		nameandtype_info = (CONSTANT_NameAndType_info_t *)src_cls->const_pool[memthodref_info->name_and_type_idx];
-		
-		// Source class information 
+
+	} else if(hb_is_interface(target_cls)) { 
+		HB_ERR("%s Target class is an intergace\n",__func__); 
+		return NULL; 
+	}	
+	
+	else {
+
+		// Source class information from constant pool sourch
 		const char* source_method_name = hb_get_const_str(nameandtype_info->name_idx, src_cls); 
 		const char* source_method_desc = hb_get_const_str(nameandtype_info->desc_idx, src_cls); 
 		
-		// Target? 
+		// From target class string comparisons 
 		for(int i = 0; i < target_cls->methods_count; i++) {
-			if(strcmp(source_method_name, hb_get_const_str(target_cls->methods[i].name_idx, target_cls) && strcmp(source_method_desc, hb_get_const_str(target_cls->methods[i].desc_idx, taget_cls))) 
+			if(!strcmp(source_method_name, hb_get_const_str(target_cls->methods[i].name_idx, target_cls)) && !strcmp(source_method_desc, hb_get_const_str(target_cls->methods[i].desc_idx, target_cls))) { 
 			method = target_cls->methods + i; 
 			return method;
-					}	
-
-				
-=======
-		// Setting the name and type for the source class 
-		CONSTANT_NameAndType_info_t *nameandtype_info; 
+			}
 		
-		// Get's the string from the constnat pool fopr our sorce method name and source method 
-		const char* source_method_name = hb_get_const_str(nameandtype_info->name_idx, src_cls); 
-		const char* source_method_desc = hb_get_const_str(nameandtype_info->desc_idx, src_cls);  
-		
-		// From target class string comparisons
-		for(int i = 0; i < target_cls->methods_count; i++) { 
-		if(!strcmp(source_method_name, hb_get_const_str(target_cls-> methods[i].name_idx, target_cls)) && !strcmp(source_method_desc, hb_get_const_str(target_cls->methods[i].desc_idx, target_cls))) {
-		method = target_cls->methods + i;
-	       return method; 	
 		}
->>>>>>> d6a4671050f4960abb37ee0ca6368c88becb5039
 	}
-	}	
-    return NULL;
-    }
+
+    return method;
+}
 
 /* 
  * looks for a matching field in class C from class D (which contains

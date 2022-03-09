@@ -288,11 +288,18 @@ handle_ldc2_w (u1 * bc, java_class_t * cls) {
 	return 3;
 }
 
-// WRITE ME
+// iload, loading int
+// The local variable at index must contain an int. 
+// The value of the local cariable at index is pushed onto the operand stack
+// Access a local varialbe using a two-byte unsigned index
 static int
 handle_iload (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	stack_frame_t *frame = cur_thread->cur_frame; 
+	u1 idx = bc[1];
+	var_t value = frame->locals[idx]; 
+	push_val(value); 
+	return 2; 
+
 }
 
 static int
@@ -334,32 +341,35 @@ handle_aload (u1 * bc, java_class_t * cls) {
 }
 
 
-// WRITE ME
+// handle_iload_<n>. The <n> must be an index into the local variable array of the current frame. 
+// This is the same as iload excpet <n> is implicit
+// The value of the local variable at <n> is pushed onto the oeprand stack
 static int
 handle_iload_0 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	stack_frame_t *frame = cur_thread->cur_frame; 
+	push_val(frame->locals[0];
+	return 1; 
 }
 
-// WRITE ME
 static int
 handle_iload_1 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+    	stack_frame_t *frame = cur_thread->cur_frame;
+	push_val(frame->locals[1];
+	return 1;
 }
 
-// WRITE ME
 static int
 handle_iload_2 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+    	stack_frame_t *frame = cur_thread->cur_frame; 
+	push_val(frame->locals[2]; 
+	return 1; 
 }
 
-// WRITE ME
 static int
 handle_iload_3 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+    	stack_frame_t *frame = cur_thread->cur_frame 
+	push_val(frame->locals[3]; 
+	return 1; 
 }
 
 #define DO_LLOADN(n) \
