@@ -404,28 +404,32 @@ hb_resolve_method (u2 const_idx,
 //			HB_ERR("%s Target class returns NULL\n", __func__); 
 			return NULL; 
 		}
-
-	} else if(hb_is_interface(target_cls)) { 
-//		HB_ERR("%s Target class is an interface\n",__func__); 
+	}
+	if(hb_is_interface(target_cls)) { 
+		//	HB_ERR("%s Target class is an interface\n",__func__); 
 		return NULL; 
-	}	
-	
-	else {
-
-		// Source class information from constant pool sourch
-		const char* source_method_name = hb_get_const_str(nameandtype_info->name_idx, src_cls); 
-		const char* source_method_desc = hb_get_const_str(nameandtype_info->desc_idx, src_cls); 
-		
-		// From target class string comparisons 
-		for(int i = 0; i < target_cls->methods_count; i++) {
-			if(!strcmp(source_method_name, hb_get_const_str(target_cls->methods[i].name_idx, target_cls)) && !strcmp(source_method_desc, hb_get_const_str(target_cls->methods[i].desc_idx, target_cls))) { 
-			method = target_cls->methods+i; 
-			return method;
-			}
-		
-		}
 	}
 
+
+	// Source class information from constant pool source
+	const char* source_method_name = hb_get_const_str(nameandtype_info->name_idx, src_cls); 
+	const char* source_method_desc = hb_get_const_str(nameandtype_info->desc_idx, src_cls); 
+
+	// From target class string comparisons 
+	for(int i = 0; i < target_cls->methods_count; i++) {
+		if(!strcmp(source_method_name, hb_get_const_str(target_cls->methods[i].name_idx, target_cls)) && !strcmp(source_method_desc, hb_get_const_str(target_cls->methods[i].desc_idx, target_cls))) { 
+			method = &target_cls->methods[i]; 
+			return method;
+		}
+
+	}
+
+	if(!method) {
+		java_class_t * super_cls = hb_get_super_class(target_cls);
+		if(super_cls) {
+			method = hb_resolve_method(const_idx, src_cls, super_cls); 
+		}
+	}
 
     return method;
 }
