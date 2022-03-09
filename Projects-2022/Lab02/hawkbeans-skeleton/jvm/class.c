@@ -248,7 +248,7 @@ hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 {
 	// if there isn't anything in the const_idx, print out error statement otherwise fill in the structure const_pool_info 
 	if(!const_idx) { 
-		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
+//		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
 		return NULL; 
 	} else if(const_idx > src_cls->const_pool_count) {
 	        HB_ERR("%s OUT OF BOUNDS\n", __func__); 
@@ -261,8 +261,9 @@ hb_resolve_class (u2 const_idx, java_class_t * src_cls)
 			src_cls = (java_class_t *)MASK_RESOLVED_BIT(const_pool_entry); 
 			return src_cls; 
 			}		
-
-		const char* class_name = hb_get_const_str(const_idx, src_cls); 
+		
+		CONSTANT_Class_info_t *const_class = (CONSTANT_Class_info_t *)src_cls->const_pool[const_idx]; 
+		const char* class_name = hb_get_const_str(const_class->name_idx, src_cls); 
 		java_class_t *cls = hb_get_class(class_name); 
 		
 		// returns cls as is and marks it in the pool as resolved
@@ -394,22 +395,18 @@ hb_resolve_method (u2 const_idx,
 	// Class idx 
 	u2 class_idx = methodref_info->class_idx; 
 
-	if(!const_idx) {
-	        // Index checking 	
-		HB_ERR("%s UNIMPLEMENTED\n", __func__); 
-
-	} else if(!target_cls) {
+	if(!target_cls) {
 		// If there is no target class, then resolve it 
 		target_cls = hb_resolve_class(class_idx, src_cls);
 
 		// Error chceking for target class, if hb_resolve_class return NULL 
 		if(target_cls == NULL) { 
-			HB_ERR("%s Target class returns NULL\n", __func__); 
+//			HB_ERR("%s Target class returns NULL\n", __func__); 
 			return NULL; 
 		}
 
 	} else if(hb_is_interface(target_cls)) { 
-		HB_ERR("%s Target class is an intergace\n",__func__); 
+//		HB_ERR("%s Target class is an interface\n",__func__); 
 		return NULL; 
 	}	
 	
@@ -422,12 +419,13 @@ hb_resolve_method (u2 const_idx,
 		// From target class string comparisons 
 		for(int i = 0; i < target_cls->methods_count; i++) {
 			if(!strcmp(source_method_name, hb_get_const_str(target_cls->methods[i].name_idx, target_cls)) && !strcmp(source_method_desc, hb_get_const_str(target_cls->methods[i].desc_idx, target_cls))) { 
-			method = target_cls->methods + i; 
+			method = target_cls->methods+i; 
 			return method;
 			}
 		
 		}
 	}
+
 
     return method;
 }
