@@ -173,20 +173,23 @@ hb_throw_exception (obj_ref_t * eref)
 	// Method information and pointing to exception table 
 	method_info_t *method_info = cur_thread->cur_frame->minfo; 
 	excp_table_t *exception_table = method_info->code_attr->excp_table; 
+    
+    HB_ERR("Exception raised: %s %s at %s \n", cur_thread->name, name_class_object, hb_get_class_name(cur_thread->class));
 
 	for(int i = 0; i < method_info->code_attr->excp_table_len; i++) { 
 		
 		u2 catch_type_idx = exception_table[i].catch_type;
 
 		CONSTANT_Class_info_t *exception_caught = (CONSTANT_Class_info_t *)class_object->const_pool[catch_type_idx]; 	
-		u2 name_idx = exception_caught->name_idx;
+	
+        u2 name_idx = exception_caught->name_idx;
 		u2 low = exception_table[i].start_pc; 
 		u2 high = exception_table[i].end_pc; 
 		u2 pc = cur_thread->cur_frame->pc; 
 
 		const char* exception_type = hb_get_const_str(name_idx, class_object);
 		
-		if(!strcmp(exception_type, name_class_object) && pc >= high && pc >= low) { 
+		if(!strcmp(exception_type, name_class_object) && pc <= high && pc >= low) { 
 			var_t v; 
 			v.obj = eref; 
 			op_stack_t *stack = cur_thread->cur_frame->op_stack; 
@@ -195,13 +198,21 @@ hb_throw_exception (obj_ref_t * eref)
 			hb_exec_method(cur_thread);
 		       return; 	
 		} 
-		else { 
+	/*	else { 
 			hb_pop_frame(cur_thread); 
 			if (!cur_thread->cur_frame) { 
 				hb_throw_exception(eref);
 			}
-		}
 
+        // Don't pop in loop.
+		}*/
+
+hb_pop_frame(cur_thread); 
+if(!cur_thread->cur_frame) { 
+
+   return;
 	}	
+
+hb_throw_exception(eref);
 
 }
