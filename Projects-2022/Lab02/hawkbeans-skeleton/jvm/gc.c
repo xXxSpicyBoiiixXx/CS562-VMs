@@ -480,8 +480,8 @@ scan_base_frame (gc_state_t * gc_state, void * priv_data)
 {
 	stack_frame_t *frame = (stack_frame_t *)priv_data;
 
-	while(!frame) { 
-		for(int i = 0; frame->max_locals; i++) {
+	while(frame) { 
+		for(int i = 0; i < frame->max_locals; i++) {
 			if(is_valid_ref(frame->locals[i].obj, gc_state)) { 
 				mark_ref(frame->locals[i].obj, gc_state);
 			}
@@ -490,7 +490,7 @@ scan_base_frame (gc_state_t * gc_state, void * priv_data)
 		op_stack_t *op_stack = frame->op_stack; 
 		int curr_sp = op_stack->sp;
 
-		while(!op_stack->oprs[op_stack->sp].obj) { 
+		while(op_stack->oprs[op_stack->sp].obj) { 
 			if(is_valid_ref(op_stack->oprs[op_stack->sp].obj, gc_state)) { 
 				mark_ref(op_stack->oprs[op_stack->sp].obj, gc_state); 
 			}
@@ -528,7 +528,7 @@ scan_class_map (gc_state_t * gc_state, void * priv_data)
 
 		if(entry) { 
 			java_class_t *object_class = (java_class_t *)entry; 
-			for(int i = 0; object_class->fields_count; i++) { 
+			for(int i = 0; i < object_class->fields_count; i++) { 
 				if(object_class->fields[i].acc_flags == ACC_STATIC) { 
 					static_fields_count++; 
 				}
