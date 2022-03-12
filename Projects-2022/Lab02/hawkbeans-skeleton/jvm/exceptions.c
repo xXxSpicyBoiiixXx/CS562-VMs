@@ -55,6 +55,8 @@ static const char * excp_strs[16] __attribute__((used)) =
 	"java/lang/StringIndexOutOfBoundsException",
 };
 
+
+// what's the point of this? 
 int 
 hb_excp_str_to_type (char * str)
 {
@@ -74,14 +76,23 @@ hb_excp_str_to_type (char * str)
  * exception object, so we have to create a new one
  * and init it).
  *
- * @return: none. exits on failure.
- *
  */
-// WRITE ME
 void
 hb_throw_and_create_excp (u1 type)
 {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
+
+java_class_t exception_class = hb_get_or_load_class(excp_strs[type]);
+
+obj_ref_t *object_class = gc_obj_alloc(exception_class);
+	
+	// Like a function, but calls a constructor
+	if(hb_invoke_ctor(object_class)) { 
+		HB_ERR("The hb_invoke_ctor failed to invoke"); 
+		exit(EXIT_FAILURE); 	
+	}
+
+hb_throw_exception(object_class); 
+
 }
 
 
@@ -144,6 +155,10 @@ get_excp_str (obj_ref_t * eref)
 void
 hb_throw_exception (obj_ref_t * eref)
 {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    exit(EXIT_FAILURE);
+	if(!eref) { 
+		hb_throw_and_create_excp(EXCP_NULL_PTR);  
+	} 
+
+		
+
 }
