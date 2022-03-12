@@ -109,8 +109,6 @@ ref_tbl_insert_ref (obj_ref_t * ref)
 	
 	return 0;
 }
-
-
 /*
  * Remove a reference from the ref table.
  *
@@ -271,12 +269,42 @@ gc_obj_alloc (java_class_t * cls)
  * to on the heap.
  *
  */
-// WRITE ME
 static int 
 sweep (gc_state_t * state)
 {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);	
-	return 0;
+	struct nk_hashtable_iter *iter = nk_create_htable_iter(state->ref_tbl->htable); 
+	int counter = 0; 
+
+	if(!iter) { 
+		HB_ERR("Count not create hashtable iterator\n"); 
+		return -1; 
+	}
+
+	do { 
+		ref_entry_t *entry = (ref_entry_t *)nk_htable_get_iter_value(iter); 
+
+		if(entry->state == GC_REF_ABSENT) { 
+			obj_ref_t *obj = (obj_ref_t *)nk_htable_get_iter_key(iter); 
+			native_obj_t *n_obj = (native_obj_t *)obj->heap_ptr; 
+
+	/*		nk_htable_remove(state->ref_tbl->htable, (unsigned long)n_obj, 0);
+			object_free(n_obj); 
+
+			state->collect_stats.bytes_reclaimed += sizeof(n_obj);
+			state->collect_stats.obj_collected++;
+			*/
+
+			counter++; 
+			ref_tbl_remove_ref(obj); 
+		}
+
+		state->collect_stats.obj_collected = counter;
+
+	} while(nk_htable_iter_advance(iter) != 0); 
+
+	nk_destroy_htable_iter(iter); 
+
+	return 0; 
 }
 
 
@@ -428,23 +456,51 @@ mark_ref (obj_ref_t * ref, gc_state_t * state)
  *
  * Also look at its class static fields
  */
-// WRITE ME
+// Scans all the fields
 static int
 scan_base_obj (gc_state_t * gc_state, void * priv_data)
 {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return 0;
+	native_obj_t *obj = (native_obj_t *)priv_data; 
+
+	for(int i = 0; i < obj->field_count; i++) { 
+		obj_ref_t *ref = obj->fields[i].obj; 
+		if(is_valid_ref(ref, gc_state)) { 
+			mark_ref(ref, gc_state); 
+		}
+	}
+	return 0; 
 }
 
 
 /*
  * Scan stack frames
  */
-// WRITE ME
 static int
 scan_base_frame (gc_state_t * gc_state, void * priv_data)
 {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
+	stack_frame_t *frame = (stack_frame_t *)priv_data;
+
+	while(!frame) { 
+		for(int i = 0; frame->max_locals; i++) {
+			if(is_valid_ref(frame->locals[i].obj, gc_state)) { 
+				mark_ref(frame->locals[i].obj, gc_state);
+			}
+		}
+
+		op_stack_t *op_stack = frame->op_stack; 
+		int curr_sp = op_stack->sp;
+
+		while(!op_stack->oprs[op_stack->sp].obj) { 
+			if(is_valid_ref(op_stack->oprs[op_stack->sp].obj, gc_state)) { 
+				mark_ref(op_stack->oprs[op_stack->sp].obj, gc_state); 
+			}
+			op_stack->sp--; 
+		}
+
+		op_stack->sp = curr_sp; 
+		frame = frame->next;
+	}
+
 	return 0;
 }
 
@@ -457,8 +513,37 @@ scan_base_frame (gc_state_t * gc_state, void * priv_data)
 static int
 scan_class_map (gc_state_t * gc_state, void * priv_data)
 {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return 0;
+	struct nk_hashtable *class_map = (struct nk_hashtable *)priv_data; 
+	struct nk_hashtable_iter *iter = nk_create_htable_iter(class_map); 
+
+	int static_fields_count = 0; 
+
+	if(!iter) { 
+		HB_ERR("Count not create hashtable iterator in %s\n", __func__); 
+		return -1;
+	}
+
+	do { 
+		ref_entry_t *entry = (ref_entry_t*)nk_htable_get_iter_value(iter); 
+
+		if(entry) { 
+			java_class_t *object_class = (java_class_t *)entry; 
+			for(int i = 0; object_class->fields_count; i++) { 
+				if(object_class->fields[i].acc_flags == ACC_STATIC) { 
+					static_fields_count++; 
+				}
+			}
+			for(int i = 0; i < static_fields_count; i++) { 
+				if(is_valid_ref(object_class->field_vals[i].obj, gc_state)) { 
+					mark_ref(object_class->field_vals[i].obj, gc_state);
+				}
+			}
+		}		
+	} while(nk_htable_iter_advance(iter) != 0); 
+
+	nk_destroy_htable_iter(iter); 
+
+	return 0;	
 }
 
 
