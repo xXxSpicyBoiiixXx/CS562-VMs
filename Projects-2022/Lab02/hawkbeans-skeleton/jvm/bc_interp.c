@@ -288,11 +288,18 @@ handle_ldc2_w (u1 * bc, java_class_t * cls) {
 	return 3;
 }
 
-// WRITE ME
+// iload, loading int
+// The local variable at index must contain an int. 
+// The value of the local cariable at index is pushed onto the operand stack
+// Access a local varialbe using a two-byte unsigned index
 static int
 handle_iload (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	stack_frame_t *frame = cur_thread->cur_frame; 
+	u1 idx = bc[1];
+	var_t value = frame->locals[idx]; 
+	push_val(value); 
+	return 2; 
+
 }
 
 static int
@@ -334,32 +341,32 @@ handle_aload (u1 * bc, java_class_t * cls) {
 }
 
 
-// WRITE ME
+// handle_iload_<n>. The <n> must be an index into the local variable array of the current frame. 
+// This is the same as iload excpet <n> is implicit
+// The value of the local variable at <n> is pushed onto the oeprand stack
+#define DO_ILOAD_N(n) \
+	stack_frame_t *frame = cur_thread->cur_frame; \
+	push_val(frame->locals[n]); \
+	return 1; 
+
 static int
 handle_iload_0 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ILOAD_N(0);
 }
 
-// WRITE ME
 static int
 handle_iload_1 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ILOAD_N(1); 
 }
 
-// WRITE ME
 static int
 handle_iload_2 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ILOAD_N(2); 
 }
 
-// WRITE ME
 static int
 handle_iload_3 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ILOAD_N(3); 
 }
 
 #define DO_LLOADN(n) \
@@ -576,11 +583,15 @@ handle_saload (u1 * bc, java_class_t * cls) {
 }
 
 
-// WRITE ME
+// The value on top of the operand stack is popped and the value of the local
+// variable atindex is set to value 
 static int
 handle_istore (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	stack_frame_t *frame = cur_thread->cur_frame; 
+	var_t value = pop_val(); 
+	u1 idx = bc[1]; 
+	frame->locals[idx].int_val = value.int_val; 
+	return 2; 
 }
 
 static int
@@ -622,33 +633,33 @@ handle_astore (u1 * bc, java_class_t * cls) {
 	return 2;
 }
 
+// The same istore from previous handler but using n 
 
-// WRITE ME
+#define DO_ISTORE_N(n) \
+	stack_frame_t *frame = cur_thread->cur_frame; \
+	var_t value = pop_val(); \
+	frame->locals[n].int_val = value.int_val; \
+	return 1; 
+
+
 static int
 handle_istore_0 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ISTORE_N(0); 
 }
 
-// WRITE ME
 static int
 handle_istore_1 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ISTORE_N(1); 
 }
 
-// WRITE ME
 static int
 handle_istore_2 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ISTORE_N(2); 
 }
 
-// WRITE ME
 static int
 handle_istore_3 (u1 * bc, java_class_t * cls) {
-    HB_ERR("%s NOT IMPLEMENTED", __func__);
-    return -1;
+	DO_ISTORE_N(3); 
 }
 
 #define DO_LSTOREN(n) \
@@ -926,11 +937,16 @@ handle_swap (u1 * bc, java_class_t * cls) {
 	return -1;
 }
 
-// WRITE ME
+// iadd  the value on the top of the operand that pop's the first two value,
+// adds them up and push the value back to the stack 
 static int
 handle_iadd (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	var_t a, b, c; 
+	a = pop_val(); 
+	b = pop_val(); 
+	c.int_val = a.int_val + b.int_val; 
+	push_val(c);
+	return 1;
 }
 
 static int
@@ -963,11 +979,22 @@ handle_dadd (u1 * bc, java_class_t * cls) {
 	return 1;
 }
 
-// WRITE ME
+// pops two values from the stack, subtracts them and then push the result back to the stack.
+// These are type ints, we have to consider, then we must consider negation 
 static int
 handle_isub (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	var_t a, b, c; 
+	b = pop_val(); 		// b is first since, it's on top 
+	a = pop_val(); 
+	if(a.int_val - b.int_val < 0) { 
+		c.int_val = -1*(b.int_val - a.int_val); 
+	} else { 
+		c.int_val = a.int_val - b.int_val; 
+	}
+	
+	push_val(c);
+	return 1;
+
 }
 
 static int
@@ -1003,8 +1030,22 @@ handle_dsub (u1 * bc, java_class_t * cls) {
 // WRITE ME
 static int
 handle_imul (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	var_t a, b, c; 
+	int m, v1, v2; 
+	
+	b = pop_val();	// Pop b first on the top of the stack
+	a = pop_val(); 
+
+	v1 = (int)a.int_val; 
+	v2 = (int)b.int_val; 
+
+	m = v1 * v2; 
+
+	c.int_val = (int)m; 
+
+	push_val(c); 
+
+	return 1; 
 }
 
 static int
@@ -1041,8 +1082,26 @@ handle_dmul (u1 * bc, java_class_t * cls) {
 // WRITE ME: be careful with exceptions
 static int
 handle_idiv (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	var_t a, b, c;
+	int m, v1, v2; 
+
+	b = pop_val(); 
+	a = pop_val(); 
+
+	v1 = (int)a.int_val; 
+	v2 = (int)b.int_val; 
+
+	if(!v2) { 
+		hb_throw_and_create_excp(EXCP_ARITH);
+		return -ESHOULD_BRANCH;
+	}
+
+	m = v1/v2;
+	c.int_val = m;
+
+	push_val(c); 
+
+	return 1; 
 }
 
 static int
@@ -1063,11 +1122,32 @@ handle_ddiv (u1 * bc, java_class_t * cls) {
 	return -1;
 }
 
-// WRITE ME: be careful with exceptions
+// Interger remainder, 
+// The int result is value1-(value1/value2) * value2. The result is pushed onto the operand stack. 
+//
 static int
 handle_irem (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	var_t a, b, c;
+	int m, v1, v2; 
+
+	b = pop_val(); 
+	a = pop_val(); 
+
+	v1 = a.int_val; 
+	v2 = b.int_val;
+
+	if(!v2) { 
+		hb_throw_and_create_excp(EXCP_ARITH);
+		return -ESHOULD_BRANCH;
+	}
+
+	m = v1 - (v1/v2) * v2; 
+
+	c.int_val = (u4)m;
+
+	push_val(c); 
+
+	return 1; 
 }
 
 static int
@@ -1088,11 +1168,15 @@ handle_drem (u1 * bc, java_class_t * cls) {
 	return -1;
 }
 
-// WRITE ME
+// negation
 static int
 handle_ineg (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	var_t v = pop_val(); 
+	var_t res; 
+	int n = (int)v.int_val; 
+	res.int_val = (u4)(-n); 
+	push_val(res);
+	return 1; 
 }
 
 static int
@@ -1773,18 +1857,60 @@ handle_invokedynamic (u1 * bc, java_class_t * cls) {
 	return -1;
 }
 
-// WRITE ME
+//Creates new object; just following anewarray
 static int
 handle_new (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	java_class_t * target_cls = NULL; 
+	obj_ref_t * oa = NULL;
+	var_t ret; 
+	u2 idx; 
+	
+	idx = GET_2B_IDX(bc); 
+
+	target_cls = hb_resolve_class(idx, cls); 
+
+	if(!target_cls) { 
+		HB_ERR("%s Can't resolve class\n", __func__); 
+		return -1;
+	}
+
+	oa = gc_obj_alloc(target_cls); 
+
+	ret.obj = oa; 
+	push_val(ret); 
+	return 3; 
 }
 
-// WRITE ME
+// Since this is an int array we need it above 4 and below 11 to be a valid type 
 static int
 handle_newarray (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	
+	obj_ref_t * oa = NULL; 
+	var_t len = pop_val();
+        var_t ret; 
+	u1 type = (u1)(bc[1]); 
+
+	if(len.int_val < 0) { 
+		hb_throw_and_create_excp(EXCP_NEG_ARR_SIZE); 
+		return -ESHOULD_BRANCH; 
+	}
+
+	if(type < 4 || type > 11) {
+		HB_ERR("Invalid Type\n");
+		return -1;
+	}
+
+	oa = gc_array_alloc(type, len.int_val); 
+	
+	if(!oa) { 
+		hb_throw_and_create_excp(EXCP_OOM); 
+		return -ESHOULD_BRANCH;
+	}
+
+	ret.obj = oa; 
+	push_val(ret); 
+	return 2; 
+	
 }
 
 static int
@@ -1795,7 +1921,7 @@ handle_anewarray (u1 * bc, java_class_t * cls) {
 	var_t len = pop_val();
 	var_t ret;
 	u2 idx;
-		
+	
 	idx = GET_2B_IDX(bc);
 
 	/* load and initialize the class (if not already) */
@@ -1830,18 +1956,47 @@ handle_anewarray (u1 * bc, java_class_t * cls) {
 	return 3;
 }
 
-// WRITE ME
+// This must throw a reference.
 static int
-handle_arraylength (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+handle_arraylength (u1 * bc, java_class_t * cls) { 
+	var_t value = pop_val(); 
+	obj_ref_t* oref = value.obj; 	// object reference
+	native_obj_t* aref; 		// native object reference
+	var_t ret;
+	enum ref_types arr_type = OBJ_ARRAY;
+
+	if(oref->type != arr_type) { 
+		HB_ERR("%s Array is not a reference type\n", __func__); 
+		return -1;	
+	}
+
+	if(!oref) { 
+		hb_throw_and_create_excp(EXCP_NULL_PTR);
+		return -ESHOULD_BRANCH;
+	}
+
+	aref = (native_obj_t *)oref->heap_ptr; 
+	ret.int_val = aref->flags.array.length; 
+	push_val(ret);
+
+	return 1;
+	
 }
 
 // WRITE ME
 static int
 handle_athrow (u1 * bc, java_class_t * cls) {
-	HB_ERR("%s NOT IMPLEMENTED", __func__);
-	return -1;
+	var_t val = pop_val(); 
+	obj_ref_t *oref = val.obj; 
+
+	if(!oref) { 
+		hb_throw_and_create_excp(EXCP_NULL_PTR); 
+		exit(EXIT_FAILURE);
+	} else { 
+		hb_throw_exception(oref); 
+	}
+
+	return 0; 
 }
 
 static int
